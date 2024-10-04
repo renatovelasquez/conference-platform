@@ -20,12 +20,10 @@ public class ConferenceRoomServiceImpl implements ConferenceRoomService {
 
     private final ConferenceRoomRepository repository;
     private final ConferenceRepository conferenceRepository;
-    private final ParticipantRepository participantRepository;
 
-    public ConferenceRoomServiceImpl(ConferenceRoomRepository repository, ConferenceRepository conferenceRepository, ParticipantRepository participantRepository) {
+    public ConferenceRoomServiceImpl(ConferenceRoomRepository repository, ConferenceRepository conferenceRepository) {
         this.repository = repository;
         this.conferenceRepository = conferenceRepository;
-        this.participantRepository = participantRepository;
     }
 
     @Override
@@ -43,11 +41,11 @@ public class ConferenceRoomServiceImpl implements ConferenceRoomService {
         if (request.getStatus().equals(RoomStatus.UNDER_CONSTRUCTION)) {
             List<Conference> conferencesAfter = conferenceRepository.conferencesAfterStartAndEndDates(conferenceRoom);
             if (!conferencesAfter.isEmpty())
-                throw new ConferencePlatformException("Conference room with booked conferences, not possible to update status.");
+                throw new ConferencePlatformException("Conference Room with booked conferences, not possible to update status.");
         }
 
         if (request.getMaxCapacity() > conferenceRoom.getMaxCapacity())
-            throw new ConferencePlatformException("Conference room exceeds maximum capacity.");
+            throw new ConferencePlatformException("Conference Room exceeds maximum capacity.");
 
         conferenceRoom.setStatus(request.getStatus());
         conferenceRoom.setMaxCapacity(request.getMaxCapacity());

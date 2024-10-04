@@ -53,7 +53,9 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
-    public boolean cancelRegistration(String participantCode) {
-        return false;
+    public void cancelRegistration(String registrationCode) {
+        ConferenceRegistration conferenceRegistration = conferenceRegistrationRepository.findByRegistrationCode(registrationCode)
+                .orElseThrow(() -> new ConferencePlatformException("Registration not found."));
+        conferenceRegistrationRepository.delete(conferenceRegistration);
     }
 }
