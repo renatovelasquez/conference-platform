@@ -1,5 +1,6 @@
 package dev.renvl.conferenceplatform.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -17,6 +18,7 @@ public class Participant {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
     private String fullName;
     @Enumerated(EnumType.STRING)
@@ -25,6 +27,7 @@ public class Participant {
     private String email;
     @Temporal(TemporalType.DATE)
     private LocalDate dateOfBirth;
+    @JsonIgnore
     @OneToMany(mappedBy = "participant")
-    private Set<ConferenceRegistration> registrations;
+    private Set<RegistrationConference> registrations;
 }

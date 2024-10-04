@@ -1,5 +1,6 @@
 package dev.renvl.conferenceplatform.service;
 
+import dev.renvl.conferenceplatform.dto.FeedbackRequest;
 import dev.renvl.conferenceplatform.model.Feedback;
 
 import java.util.List;
@@ -7,5 +8,5 @@ import java.util.List;
 public interface FeedbackService {
     List<Feedback> findByConference(Long conferenceId);
 
-    Feedback sendFeedback(Feedback feedback);
+    Feedback sendFeedback(FeedbackRequest request);
 }

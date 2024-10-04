@@ -1,30 +1,28 @@
 package dev.renvl.conferenceplatform.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
-import lombok.Setter;
 
 import java.time.LocalDateTime;
 
 @Entity
 @Getter
-@Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@Builder
 public class Feedback {
-
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
     private String feedback;
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime dateCreated;
     @ManyToOne(optional = false)
-    @JoinColumn(name = "participant_id", nullable = false, updatable = false)
-    private Participant participant;
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "conference_room_id", nullable = false, updatable = false)
-    private ConferenceRoom conferenceRoom;
+    @JoinColumn(name = "registration_conference_id", nullable = false, updatable = false)
+    private RegistrationConference registrationConference;
 }

@@ -1,5 +1,6 @@
 package dev.renvl.conferenceplatform.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -9,10 +10,11 @@ import lombok.*;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
-public class ConferenceRegistration {
+public class RegistrationConference {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @JsonIgnore
     private Long id;
     @ManyToOne
     @JoinColumn(name = "participant_id")

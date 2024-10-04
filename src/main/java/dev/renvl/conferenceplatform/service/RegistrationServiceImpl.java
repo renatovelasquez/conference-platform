@@ -2,7 +2,7 @@ package dev.renvl.conferenceplatform.service;
 
 import dev.renvl.conferenceplatform.dto.RegistrationRequest;
 import dev.renvl.conferenceplatform.model.Conference;
-import dev.renvl.conferenceplatform.model.ConferenceRegistration;
+import dev.renvl.conferenceplatform.model.RegistrationConference;
 import dev.renvl.conferenceplatform.model.Participant;
 import dev.renvl.conferenceplatform.repository.ConferenceRegistrationRepository;
 import dev.renvl.conferenceplatform.repository.ConferenceRepository;
@@ -42,7 +42,7 @@ public class RegistrationServiceImpl implements RegistrationService {
                 .orElseThrow(() -> new ConferencePlatformException("Conference not found."));
 
         String registrationCode = UUID.randomUUID().toString().split("-")[0];
-        ConferenceRegistration registration = ConferenceRegistration.builder()
+        RegistrationConference registration = RegistrationConference.builder()
                 .conference(conference)
                 .participant(participant)
                 .registrationCode(registrationCode)
@@ -54,8 +54,8 @@ public class RegistrationServiceImpl implements RegistrationService {
 
     @Override
     public void cancelRegistration(String registrationCode) {
-        ConferenceRegistration conferenceRegistration = conferenceRegistrationRepository.findByRegistrationCode(registrationCode)
+        RegistrationConference registrationConference = conferenceRegistrationRepository.findByRegistrationCode(registrationCode)
                 .orElseThrow(() -> new ConferencePlatformException("Registration not found."));
-        conferenceRegistrationRepository.delete(conferenceRegistration);
+        conferenceRegistrationRepository.delete(registrationConference);
     }
 }
