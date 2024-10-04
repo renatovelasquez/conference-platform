@@ -1,9 +1,6 @@
 package dev.renvl.conferenceplatform.controller;
 
-import dev.renvl.conferenceplatform.dto.CancelConferenceRequest;
-import dev.renvl.conferenceplatform.dto.ConferenceRequest;
-import dev.renvl.conferenceplatform.dto.MessageResponseDto;
-import dev.renvl.conferenceplatform.dto.UpdateConferenceRequest;
+import dev.renvl.conferenceplatform.dto.*;
 import dev.renvl.conferenceplatform.model.Conference;
 import dev.renvl.conferenceplatform.service.ConferenceService;
 import exceptions.ConferencePlatformException;
@@ -103,7 +100,7 @@ public class ConferenceController {
         Set<String> messages = new HashSet<>();
         HttpStatus httpStatus = HttpStatus.OK;
         try {
-            HashMap<Conference, Boolean> conferences = conferenceService.availabilityConferences();
+            AvailabilityConferencesResponse conferences = conferenceService.availabilityConferences();
             return ResponseEntity.status(httpStatus).body(conferences);
         } catch (Exception e) {
             httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
@@ -134,6 +131,31 @@ public class ConferenceController {
         } catch (ConferencePlatformException e) {
             httpStatus = HttpStatus.BAD_REQUEST;
             messages.add(e.getMessage());
+        } catch (Exception e) {
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+            messages.add(e.getMessage());
+        }
+        MessageResponseDto messageResponseDto = MessageResponseDto.builder()
+                .httpStatus(httpStatus)
+                .timestamp(System.currentTimeMillis())
+                .messages(messages).build();
+        return ResponseEntity.status(messageResponseDto.getHttpStatus()).body(messageResponseDto);
+    }
+
+    @Operation(
+            summary = "Available Conferences",
+            description = "Available Conferences object by specifying its values. The response is Conference object")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = HashMap.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema())})})
+    @GetMapping("/available")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> getAvailableConferences(AvailableConferencesRequest request) {
+        Set<String> messages = new HashSet<>();
+        HttpStatus httpStatus = HttpStatus.OK;
+        try {
+            AvailabilityConferencesResponse response = conferenceService.getAvailableConferences(request);
+            return ResponseEntity.status(httpStatus).body(response);
         } catch (Exception e) {
             httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
             messages.add(e.getMessage());

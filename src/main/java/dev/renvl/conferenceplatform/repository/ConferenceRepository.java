@@ -21,4 +21,9 @@ public interface ConferenceRepository extends JpaRepository<Conference, Long> {
     @Query("select c from Conference c where c.conferenceRoom = ?1 and " +
             "current_time >= c.startConference or current_time >= c.endConference")
     List<Conference> conferencesAfterStartAndEndDates(ConferenceRoom room);
+
+    @Query("select c from Conference c where " +
+            "(c.startConference <= ?1 and ?1 <= c.endConference) or " +
+            "(c.startConference <= ?2 and ?2 <= c.endConference)")
+    List<Conference> getAvailableConferences(LocalDateTime start, LocalDateTime end);
 }

@@ -4,12 +4,14 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDateTime;
+import java.util.Set;
 
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @Builder
 public class Conference {
 
@@ -22,5 +24,6 @@ public class Conference {
     @ManyToOne(optional = false)
     @JoinColumn(name = "conference_room_id", nullable = false, updatable = false)
     private ConferenceRoom conferenceRoom;
-
+    @ManyToMany
+    Set<Participant> participants;
 }

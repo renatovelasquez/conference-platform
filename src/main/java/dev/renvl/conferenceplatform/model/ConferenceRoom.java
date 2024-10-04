@@ -10,8 +10,10 @@ import lombok.*;
 @Entity
 @Getter
 @Setter
+@Builder
 @NoArgsConstructor
 @AllArgsConstructor
+@ToString
 @EqualsAndHashCode(exclude = "id")
 public class ConferenceRoom {
 

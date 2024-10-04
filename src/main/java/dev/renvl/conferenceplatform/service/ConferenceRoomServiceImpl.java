@@ -46,8 +46,7 @@ public class ConferenceRoomServiceImpl implements ConferenceRoomService {
                 throw new ConferencePlatformException("Conference room with booked conferences, not possible to update status.");
         }
 
-        int participants = participantRepository.countParticipantsByConference_ConferenceRoom(conferenceRoom);
-        if (participants > request.getMaxCapacity())
+        if (request.getMaxCapacity() > conferenceRoom.getMaxCapacity())
             throw new ConferencePlatformException("Conference room exceeds maximum capacity.");
 
         conferenceRoom.setStatus(request.getStatus());

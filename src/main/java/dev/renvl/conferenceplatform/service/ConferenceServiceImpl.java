@@ -1,8 +1,6 @@
 package dev.renvl.conferenceplatform.service;
 
-import dev.renvl.conferenceplatform.dto.CancelConferenceRequest;
-import dev.renvl.conferenceplatform.dto.ConferenceRequest;
-import dev.renvl.conferenceplatform.dto.UpdateConferenceRequest;
+import dev.renvl.conferenceplatform.dto.*;
 import dev.renvl.conferenceplatform.model.Conference;
 import dev.renvl.conferenceplatform.model.ConferenceRoom;
 import dev.renvl.conferenceplatform.model.RoomStatus;
@@ -13,18 +11,18 @@ import exceptions.ConferencePlatformException;
 import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
 
-import java.util.HashMap;
+import java.time.LocalDateTime;
 import java.util.List;
 
 @Service
 public class ConferenceServiceImpl implements ConferenceService {
 
-    private final ConferenceRepository conferenceRepository;
+    private final ConferenceRepository repository;
     private final ConferenceRoomRepository conferenceRoomRepository;
     private final ParticipantRepository participantRepository;
 
-    public ConferenceServiceImpl(ConferenceRepository conferenceRepository, ConferenceRoomRepository conferenceRoomRepository, ParticipantRepository participantRepository) {
-        this.conferenceRepository = conferenceRepository;
+    public ConferenceServiceImpl(ConferenceRepository repository, ConferenceRoomRepository conferenceRoomRepository, ParticipantRepository participantRepository) {
+        this.repository = repository;
         this.conferenceRoomRepository = conferenceRoomRepository;
         this.participantRepository = participantRepository;
     }
@@ -38,53 +36,65 @@ public class ConferenceServiceImpl implements ConferenceService {
         if (!conferenceRoom.getStatus().equals(RoomStatus.FREE))
             throw new ConferencePlatformException("Conference room not available.");
 
-        List<Conference> conferences = conferenceRepository.conferencesBetweenStartAndEndDates
-                (conferenceRequest.getStartConference(), conferenceRequest.getEndConference());
+        List<Conference> conferences = repository.conferencesBetweenStartAndEndDates(
+                conferenceRequest.getStartConference(), conferenceRequest.getEndConference());
         if (!conferences.isEmpty())
             throw new ConferencePlatformException("Conference room not available during that time.");
 
         Conference conference = Conference.builder()
                 .name(conferenceRequest.getName())
-                .startConference(conferenceRequest.getStartConference())
-                .endConference(conferenceRequest.getEndConference())
+                .startConference(LocalDateTime.from(conferenceRequest.getStartConference()))
+                .endConference(LocalDateTime.from(conferenceRequest.getEndConference()))
                 .conferenceRoom(conferenceRoom)
                 .build();
-        return conferenceRepository.save(conference);
+        return repository.save(conference);
     }
 
     @Override
     public void cancelConference(CancelConferenceRequest cancelConferenceRequest) {
-        Conference conference = conferenceRepository.findById(cancelConferenceRequest.getId())
+        Conference conference = repository.findById(cancelConferenceRequest.getId())
                 .orElseThrow(() -> new ConferencePlatformException("Conference not found."));
-        conferenceRepository.delete(conference);
+        repository.delete(conference);
         //TODO delete all registrations
     }
 
     @Override
-    public HashMap<Conference, Boolean> availabilityConferences() {
-        HashMap<Conference, Boolean> availabilityConferences = new HashMap<>();
-        List<Conference> conferences = conferenceRepository.findAll();
-        for (Conference conf : conferences) {
-            int participants = participantRepository.countParticipantsByConference_Id(conf.getId());
-            boolean availability = conf.getConferenceRoom().getMaxCapacity() < participants;
-            availabilityConferences.put(conf, availability);
+    public AvailabilityConferencesResponse availabilityConferences() {
+        AvailabilityConferencesResponse response = new AvailabilityConferencesResponse();
+        List<Conference> conferences = repository.findAll();
+        for (Conference conference : conferences) {
+            int participants = conference.getParticipants().size();
+            boolean availability = conference.getConferenceRoom().getMaxCapacity() < participants;
+            AvailableConference availableConference = AvailableConference.builder().conference(conference).available(availability).build();
+            response.getAvailableConferences().add(availableConference);
         }
-        return availabilityConferences;
+        return response;
     }
 
     @Override
     @Transactional
     public Conference updateConference(UpdateConferenceRequest updateConferenceRequest) {
-        Conference conference = conferenceRepository.findById(updateConferenceRequest.getIdConference())
+        Conference conference = repository.findById(updateConferenceRequest.getIdConference())
                 .orElseThrow(() -> new ConferencePlatformException("Conference not found."));
 
         ConferenceRoom conferenceRoom = conferenceRoomRepository.findById(updateConferenceRequest.getIdConference())
                 .orElseThrow(() -> new ConferencePlatformException("Conference Room not found."));
 
-        conference.setStartConference(updateConferenceRequest.getStartConference());
-        conference.setEndConference(updateConferenceRequest.getEndConference());
+        conference.setStartConference(LocalDateTime.from(updateConferenceRequest.getStartConference()));
+        conference.setEndConference(LocalDateTime.from(updateConferenceRequest.getEndConference()));
         conference.setConferenceRoom(conferenceRoom);
 
-        return conferenceRepository.save(conference);
+        return repository.save(conference);
+    }
+
+    @Override
+    public AvailabilityConferencesResponse getAvailableConferences(AvailableConferencesRequest request) {
+        AvailabilityConferencesResponse response = new AvailabilityConferencesResponse();
+        List<Conference> conferences = repository.getAvailableConferences(request.getStartConference(), request.getEndConference());
+        for (Conference conference : conferences) {
+            AvailableConference availableConference = AvailableConference.builder().conference(conference).build();
+            response.getAvailableConferences().add(availableConference);
+        }
+        return response;
     }
 }

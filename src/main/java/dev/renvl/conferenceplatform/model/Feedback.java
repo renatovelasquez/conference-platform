@@ -6,6 +6,7 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
@@ -19,12 +20,11 @@ public class Feedback {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
     private String feedback;
-    @Column(name="date_created")
     @Temporal(TemporalType.TIMESTAMP)
-    private Date dateCreated;
+    private LocalDateTime dateCreated;
     @ManyToOne(optional = false)
-    @JoinColumn(name = "conference_user_id", nullable = false, updatable = false)
-    private ConferenceUser conferenceUser;
+    @JoinColumn(name = "participant_id", nullable = false, updatable = false)
+    private Participant participant;
     @ManyToOne(optional = false)
     @JoinColumn(name = "conference_room_id", nullable = false, updatable = false)
     private ConferenceRoom conferenceRoom;

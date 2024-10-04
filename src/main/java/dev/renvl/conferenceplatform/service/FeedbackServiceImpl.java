@@ -19,8 +19,8 @@ public class FeedbackServiceImpl implements FeedbackService {
     public List<Feedback> findByConference(Long conferenceId) {
         List<Feedback> feedbacks = repository.findAll();
         for (Feedback feedback : feedbacks) {
-            String name = feedback.getConferenceUser().getFullName().replaceAll("(\\b\\w)(\\w+)", "$1***");
-            feedback.getConferenceUser().setFullName(name);
+            String name = feedback.getParticipant().getFullName().replaceAll("(\\b\\w)(\\w+)", "$1***");
+            feedback.getParticipant().setFullName(name);
         }
         return feedbacks;
     }

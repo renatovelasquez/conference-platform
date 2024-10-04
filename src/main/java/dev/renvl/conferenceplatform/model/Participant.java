@@ -6,19 +6,23 @@ import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
 
+import java.time.LocalDate;
+import java.util.Set;
+
 @Entity
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
 public class Participant {
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "conference_user_id", nullable = false, updatable = false)
-    private ConferenceUser conferenceUser;
-    @ManyToOne(optional = false)
-    @JoinColumn(name = "conference_id", nullable = false, updatable = false)
-    private Conference conference;
+    private String fullName;
+    private String gender;
+    private String email;
+    @Temporal(TemporalType.DATE)
+    private LocalDate dateOfBirth;
+    private String participantCode;
 }

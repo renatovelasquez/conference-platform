@@ -1,9 +1,9 @@
 package dev.renvl.conferenceplatform.service;
 
-import dev.renvl.conferenceplatform.model.ConferenceUser;
+import dev.renvl.conferenceplatform.model.Participant;
 
 public interface RegistrationService {
-    ConferenceUser register(ConferenceUser conferenceUser);
+    Participant register(Participant participant);
 
     boolean cancelRegistration(String participantCode);
 }
