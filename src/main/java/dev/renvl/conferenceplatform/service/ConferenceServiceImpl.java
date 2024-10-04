@@ -63,7 +63,7 @@ public class ConferenceServiceImpl implements ConferenceService {
         AvailabilityConferencesResponse response = new AvailabilityConferencesResponse();
         List<Conference> conferences = repository.findAll();
         for (Conference conference : conferences) {
-            int participants = conference.getParticipants().size();
+            int participants = conference.getRegistrations().size();
             boolean availability = conference.getConferenceRoom().getMaxCapacity() < participants;
             AvailableConference availableConference = AvailableConference.builder().conference(conference).available(availability).build();
             response.getAvailableConferences().add(availableConference);
