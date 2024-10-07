@@ -34,7 +34,7 @@ public class ConferenceRoomServiceImpl implements ConferenceRoomService {
                 .orElseThrow(() -> new ConferencePlatformException("Conference Room not found."));
 
         if (request.getStatus().equals(Status.UNDER_CONSTRUCTION)) {
-            List<Conference> conferencesAfter = conferenceRepository.conferencesAfterStartAndEndDates(conferenceRoom);
+            List<Conference> conferencesAfter = conferenceRepository.conferencesAfterStartOrEndDates(conferenceRoom);
             if (!conferencesAfter.isEmpty())
                 throw new ConferencePlatformException("Conference Room with booked conferences, not possible to update status.");
         }

@@ -76,8 +76,15 @@ public class ConferenceServiceImpl implements ConferenceService {
         Conference conference = repository.findById(request.getIdConference())
                 .orElseThrow(() -> new ConferencePlatformException("Conference not found."));
 
-        ConferenceRoom conferenceRoom = conferenceRoomRepository.findById(request.getIdConference())
+        ConferenceRoom conferenceRoom = conferenceRoomRepository.findById(request.getIdConferenceRoom())
                 .orElseThrow(() -> new ConferencePlatformException("Conference Room not found."));
+        if (!conferenceRoom.getStatus().equals(Status.AVAILABLE))
+            throw new ConferencePlatformException("Conference room " + conferenceRoom.getStatus());
+
+        List<Conference> conferences = repository.conferencesBetweenStartAndEndDatesByConferenceRoom(request.getIdConferenceRoom(),
+                request.getStartConference(), request.getEndConference());
+        if (!conferences.isEmpty())
+            throw new ConferencePlatformException("Conference room not available during that time.");
 
         conference.setStartConference(LocalDateTime.from(request.getStartConference()));
         conference.setEndConference(LocalDateTime.from(request.getEndConference()));

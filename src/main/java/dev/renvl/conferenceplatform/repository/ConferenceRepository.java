@@ -13,6 +13,14 @@ import java.util.Optional;
 @Repository
 public interface ConferenceRepository extends JpaRepository<Conference, Long> {
 
+    @Query("select c from Conference c " +
+            "inner join ConferenceRoom cr on cr = c.conferenceRoom " +
+            "where cr.id = ?1 and " +
+            "(c.startConference < ?2 and c.endConference > ?2) or " +
+            "(c.startConference < ?3 and c.endConference > ?3) or " +
+            "(c.startConference >= ?2 and c.endConference <= ?3)")
+    List<Conference> conferencesBetweenStartAndEndDatesByConferenceRoom(Long idRoom, LocalDateTime start, LocalDateTime end);
+
     @Query("select c from Conference c where " +
             "(c.startConference < ?1 and c.endConference > ?1) or " +
             "(c.startConference < ?2 and c.endConference > ?2) or " +
@@ -25,7 +33,7 @@ public interface ConferenceRepository extends JpaRepository<Conference, Long> {
 
     @Query("select c from Conference c where c.conferenceRoom = ?1 and " +
             "current_time >= c.startConference or current_time >= c.endConference")
-    List<Conference> conferencesAfterStartAndEndDates(ConferenceRoom room);
+    List<Conference> conferencesAfterStartOrEndDates(ConferenceRoom room);
 
     @Query("select c, cr.maxCapacity - count(rc) as freeSpots," +
             "case when count(rc) < cr.maxCapacity then 'AVAILABLE' else 'FULL' end as availability " +
