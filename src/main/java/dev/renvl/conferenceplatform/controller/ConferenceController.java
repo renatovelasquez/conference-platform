@@ -92,7 +92,7 @@ public class ConferenceController {
             summary = "Availability Conferences",
             description = "Availability Conferences object by specifying its values. The response is Conference object")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = HashMap.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = Conference.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema())})})
     @GetMapping("/available/{idConference}")
     @ResponseStatus(HttpStatus.OK)
@@ -146,7 +146,7 @@ public class ConferenceController {
             summary = "Available Conferences",
             description = "Available Conferences object by specifying its values. The response is Conference object")
     @ApiResponses({
-            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = HashMap.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = AvailabilityConferencesResponse.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema())})})
     @GetMapping("/available")
     @ResponseStatus(HttpStatus.OK)

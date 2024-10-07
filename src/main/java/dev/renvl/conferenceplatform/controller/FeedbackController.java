@@ -1,7 +1,6 @@
 package dev.renvl.conferenceplatform.controller;
 
-import dev.renvl.conferenceplatform.dto.FeedbackRequest;
-import dev.renvl.conferenceplatform.dto.MessageResponseDto;
+import dev.renvl.conferenceplatform.dto.*;
 import dev.renvl.conferenceplatform.model.Feedback;
 import dev.renvl.conferenceplatform.service.FeedbackService;
 import io.swagger.v3.oas.annotations.Operation;
@@ -17,6 +16,7 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -61,32 +61,28 @@ public class FeedbackController {
         return ResponseEntity.status(messageResponseDto.getHttpStatus()).body(messageResponseDto);
     }
 
-//    @Operation(
-//            summary = "Cancel Registration",
-//            description = "Cancel Registration object by specifying its values. The response is Registration object")
-//    @ApiResponses({
-//            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = String.class), mediaType = "application/json")}),
-//            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
-//            @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema())})})
-//    @DeleteMapping("{code}")
-//    @ResponseStatus(HttpStatus.OK)
-//    public ResponseEntity<?> cancelRegistration(@PathVariable("code") String registrationCode) {
-//        Set<String> messages = new HashSet<>();
-//        HttpStatus httpStatus;
-//        try {
-//            registrationService.cancelRegistration(registrationCode);
-//            return ResponseEntity.ok("Registration cancelled");
-//        } catch (ConferencePlatformException e) {
-//            httpStatus = HttpStatus.BAD_REQUEST;
-//            messages.add(e.getMessage());
-//        } catch (Exception e) {
-//            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
-//            messages.add(e.getMessage());
-//        }
-//        MessageResponseDto messageResponseDto = MessageResponseDto.builder()
-//                .httpStatus(httpStatus)
-//                .timestamp(System.currentTimeMillis())
-//                .messages(messages).build();
-//        return ResponseEntity.status(messageResponseDto.getHttpStatus()).body(messageResponseDto);
-//    }
+    @Operation(
+            summary = "Feedback",
+            description = "Feedback object by specifying its values. The response is Conference object")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = Feedback.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema())})})
+    @GetMapping("{idConference}")
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> getAvailableConferences(@PathVariable("idConference") Long idConference) {
+        Set<String> messages = new HashSet<>();
+        HttpStatus httpStatus = HttpStatus.OK;
+        try {
+            FeedbackResponse response = feedbackService.findByConference(idConference);
+            return ResponseEntity.status(httpStatus).body(response);
+        } catch (Exception e) {
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+            messages.add(e.getMessage());
+        }
+        MessageResponseDto messageResponseDto = MessageResponseDto.builder()
+                .httpStatus(httpStatus)
+                .timestamp(System.currentTimeMillis())
+                .messages(messages).build();
+        return ResponseEntity.status(messageResponseDto.getHttpStatus()).body(messageResponseDto);
+    }
 }

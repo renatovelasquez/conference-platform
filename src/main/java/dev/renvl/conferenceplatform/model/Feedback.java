@@ -19,7 +19,7 @@ public class Feedback {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @JsonIgnore
     private Long id;
-    private String feedback;
+    private String content;
     @Temporal(TemporalType.TIMESTAMP)
     private LocalDateTime dateCreated;
     @ManyToOne(optional = false)
