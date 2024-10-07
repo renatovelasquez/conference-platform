@@ -2,8 +2,10 @@ package dev.renvl.conferenceplatform.controller;
 
 import dev.renvl.conferenceplatform.dto.ConferenceRoomRequest;
 import dev.renvl.conferenceplatform.dto.MessageResponseDto;
+import dev.renvl.conferenceplatform.dto.UpdateConferenceRoomRequest;
 import dev.renvl.conferenceplatform.model.ConferenceRoom;
 import dev.renvl.conferenceplatform.service.ConferenceRoomService;
+import exceptions.ConferencePlatformException;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -62,17 +64,34 @@ public class ConferenceRoomController {
         return ResponseEntity.status(messageResponseDto.getHttpStatus()).body(messageResponseDto);
     }
 
-//    @Operation(
-//            summary = "Retrieve ConferenceRoom by ID",
-//            description = "Get ConferenceRoom by specifying its ID. The response is ConferenceRoom object")
-//    @ApiResponses({
-//            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = ConferenceRoomResponse.class), mediaType = "application/json")}),
-//            @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
-//            @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema())})})
-//    @GetMapping("/{account_id}")
-//    public ResponseEntity<ConferenceRoomResponse> getConferenceRoom(@PathVariable("account_id") Integer account_id) {
-//        return ResponseEntity.ok(accountService.getConferenceRoom(account_id));
-//    }
+    @Operation(
+            summary = "Update Conference Room",
+            description = "Update Conference Room object by specifying its values. The response is Conference Room object")
+    @ApiResponses({
+            @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = ConferenceRoom.class), mediaType = "application/json")}),
+            @ApiResponse(responseCode = "400", content = {@Content(schema = @Schema())}),
+            @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema())})})
+    @PutMapping
+    @ResponseStatus(HttpStatus.OK)
+    public ResponseEntity<?> updateConferenceRoom(@Valid @RequestBody UpdateConferenceRoomRequest request) {
+        Set<String> messages = new HashSet<>();
+        HttpStatus httpStatus = HttpStatus.OK;
+        try {
+            ConferenceRoom conference = conferenceRoomService.updateConferenceRoom(request);
+            return ResponseEntity.status(httpStatus).body(conference);
+        } catch (ConferencePlatformException e) {
+            httpStatus = HttpStatus.BAD_REQUEST;
+            messages.add(e.getMessage());
+        } catch (Exception e) {
+            httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
+            messages.add(e.getMessage());
+        }
+        MessageResponseDto messageResponseDto = MessageResponseDto.builder()
+                .httpStatus(httpStatus)
+                .timestamp(System.currentTimeMillis())
+                .messages(messages).build();
+        return ResponseEntity.status(messageResponseDto.getHttpStatus()).body(messageResponseDto);
+    }
 
 
 }

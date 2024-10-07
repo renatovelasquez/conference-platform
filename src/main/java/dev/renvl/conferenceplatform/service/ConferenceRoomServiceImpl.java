@@ -34,13 +34,18 @@ public class ConferenceRoomServiceImpl implements ConferenceRoomService {
                 .orElseThrow(() -> new ConferencePlatformException("Conference Room not found."));
 
         if (request.getStatus().equals(Status.UNDER_CONSTRUCTION)) {
-            List<Conference> conferencesAfter = conferenceRepository.conferencesAfterStartOrEndDates(conferenceRoom);
+            List<Conference> conferencesAfter = conferenceRepository.conferencesAfterStartOrEndDatesByIdRoom(request.getIdConferenceRoom());
             if (!conferencesAfter.isEmpty())
-                throw new ConferencePlatformException("Conference Room with booked conferences, not possible to update status.");
+                throw new ConferencePlatformException("Conference Room with conferences, not possible update to '"
+                        + Status.UNDER_CONSTRUCTION + "' status.");
+        } else {
+            List<Conference> roomConferences = conferenceRepository.findConferencesByConferenceRoom_Id(request.getIdConferenceRoom());
+            for (Conference conference : roomConferences) {
+                if (conference.getRegistrations().size() > request.getMaxCapacity())
+                    throw new ConferencePlatformException("Conference '" + conference.getName()
+                            + "' number of participants exceeds new capacity.");
+            }
         }
-
-        if (request.getMaxCapacity() > conferenceRoom.getMaxCapacity())
-            throw new ConferencePlatformException("Conference Room exceeds maximum capacity.");
 
         conferenceRoom.setStatus(request.getStatus());
         conferenceRoom.setMaxCapacity(request.getMaxCapacity());
