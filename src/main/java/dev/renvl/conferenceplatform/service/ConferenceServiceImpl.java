@@ -3,7 +3,7 @@ package dev.renvl.conferenceplatform.service;
 import dev.renvl.conferenceplatform.dto.*;
 import dev.renvl.conferenceplatform.model.Conference;
 import dev.renvl.conferenceplatform.model.ConferenceRoom;
-import dev.renvl.conferenceplatform.model.RoomStatus;
+import dev.renvl.conferenceplatform.model.Status;
 import dev.renvl.conferenceplatform.repository.ConferenceRepository;
 import dev.renvl.conferenceplatform.repository.ConferenceRoomRepository;
 import dev.renvl.conferenceplatform.repository.ParticipantRepository;
@@ -28,60 +28,56 @@ public class ConferenceServiceImpl implements ConferenceService {
     }
 
     @Override
-    public Conference createConference(ConferenceRequest conferenceRequest) {
+    public Conference createConference(ConferenceRequest request) {
         ConferenceRoom conferenceRoom = conferenceRoomRepository
-                .findById(conferenceRequest.getIdConferenceRoom())
+                .findById(request.getIdConferenceRoom())
                 .orElseThrow(() -> new ConferencePlatformException("Conference room not found."));
 
-        if (!conferenceRoom.getStatus().equals(RoomStatus.FREE))
-            throw new ConferencePlatformException("Conference room not available.");
+        if (!conferenceRoom.getStatus().equals(Status.AVAILABLE))
+            throw new ConferencePlatformException("Conference room " + conferenceRoom.getStatus());
 
         List<Conference> conferences = repository.conferencesBetweenStartAndEndDates(
-                conferenceRequest.getStartConference(), conferenceRequest.getEndConference());
+                request.getStartConference(), request.getEndConference());
         if (!conferences.isEmpty())
             throw new ConferencePlatformException("Conference room not available during that time.");
 
         Conference conference = Conference.builder()
-                .name(conferenceRequest.getName())
-                .startConference(LocalDateTime.from(conferenceRequest.getStartConference()))
-                .endConference(LocalDateTime.from(conferenceRequest.getEndConference()))
+                .name(request.getName())
+                .startConference(LocalDateTime.from(request.getStartConference()))
+                .endConference(LocalDateTime.from(request.getEndConference()))
                 .conferenceRoom(conferenceRoom)
                 .build();
         return repository.save(conference);
     }
 
     @Override
-    public void cancelConference(CancelConferenceRequest cancelConferenceRequest) {
-        Conference conference = repository.findById(cancelConferenceRequest.getId())
+    public void cancelConference(CancelConferenceRequest request) {
+        Conference conference = repository.findById(request.getId())
                 .orElseThrow(() -> new ConferencePlatformException("Conference not found."));
         repository.delete(conference);
         //TODO delete all registrations
     }
 
     @Override
-    public AvailabilityConferencesResponse availabilityConferences() {
-        AvailabilityConferencesResponse response = new AvailabilityConferencesResponse();
-        List<Conference> conferences = repository.findAll();
-        for (Conference conference : conferences) {
-            int participants = conference.getRegistrations().size();
-            boolean availability = conference.getConferenceRoom().getMaxCapacity() < participants;
-            AvailableConference availableConference = AvailableConference.builder().conference(conference).available(availability).build();
-            response.getAvailableConferences().add(availableConference);
-        }
-        return response;
+    public Conference availabilityConference(Long idConference) {
+        Conference conference = repository.findById(idConference)
+                .orElseThrow(() -> new ConferencePlatformException("Conference not found."));
+        conference.setAvailability(conference.getRegistrations().size() == conference.getConferenceRoom().getMaxCapacity() ? Status.FULL : Status.AVAILABLE);
+        conference.setFreeSpots(conference.getConferenceRoom().getMaxCapacity() - conference.getRegistrations().size());
+        return conference;
     }
 
     @Override
     @Transactional
-    public Conference updateConference(UpdateConferenceRequest updateConferenceRequest) {
-        Conference conference = repository.findById(updateConferenceRequest.getIdConference())
+    public Conference updateConference(UpdateConferenceRequest request) {
+        Conference conference = repository.findById(request.getIdConference())
                 .orElseThrow(() -> new ConferencePlatformException("Conference not found."));
 
-        ConferenceRoom conferenceRoom = conferenceRoomRepository.findById(updateConferenceRequest.getIdConference())
+        ConferenceRoom conferenceRoom = conferenceRoomRepository.findById(request.getIdConference())
                 .orElseThrow(() -> new ConferencePlatformException("Conference Room not found."));
 
-        conference.setStartConference(LocalDateTime.from(updateConferenceRequest.getStartConference()));
-        conference.setEndConference(LocalDateTime.from(updateConferenceRequest.getEndConference()));
+        conference.setStartConference(LocalDateTime.from(request.getStartConference()));
+        conference.setEndConference(LocalDateTime.from(request.getEndConference()));
         conference.setConferenceRoom(conferenceRoom);
 
         return repository.save(conference);

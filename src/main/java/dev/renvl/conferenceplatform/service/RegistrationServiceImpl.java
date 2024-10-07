@@ -41,6 +41,9 @@ public class RegistrationServiceImpl implements RegistrationService {
         Conference conference = conferenceRepository.findById(request.getIdConference())
                 .orElseThrow(() -> new ConferencePlatformException("Conference not found."));
 
+        if (conference.getRegistrations().size() >= conference.getConferenceRoom().getMaxCapacity())
+            throw new ConferencePlatformException("Conference room exceeded maximum capacity.");
+
         String registrationCode = UUID.randomUUID().toString().split("-")[0];
         RegistrationConference registration = RegistrationConference.builder()
                 .conference(conference)

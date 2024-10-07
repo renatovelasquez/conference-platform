@@ -1,6 +1,6 @@
 package dev.renvl.conferenceplatform.dto;
 
-import dev.renvl.conferenceplatform.model.RoomStatus;
+import dev.renvl.conferenceplatform.model.Status;
 import jakarta.persistence.EnumType;
 import jakarta.persistence.Enumerated;
 import jakarta.validation.constraints.NotNull;
@@ -18,7 +18,7 @@ public class UpdateConferenceRoomRequest {
     private Long idConferenceRoom;
     @Enumerated(EnumType.STRING)
     @NotNull(message = "Status must not be blank")
-    private RoomStatus status;
+    private Status status;
     @Positive(message = "Max capacity must not be zero")
     private int maxCapacity;
 }

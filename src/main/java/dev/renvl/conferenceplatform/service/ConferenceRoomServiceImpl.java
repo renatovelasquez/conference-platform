@@ -4,14 +4,11 @@ import dev.renvl.conferenceplatform.dto.ConferenceRoomRequest;
 import dev.renvl.conferenceplatform.dto.UpdateConferenceRoomRequest;
 import dev.renvl.conferenceplatform.model.Conference;
 import dev.renvl.conferenceplatform.model.ConferenceRoom;
-import dev.renvl.conferenceplatform.model.RoomStatus;
+import dev.renvl.conferenceplatform.model.Status;
 import dev.renvl.conferenceplatform.repository.ConferenceRepository;
 import dev.renvl.conferenceplatform.repository.ConferenceRoomRepository;
-import dev.renvl.conferenceplatform.repository.ParticipantRepository;
 import exceptions.ConferencePlatformException;
-import org.springframework.data.util.Streamable;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -27,10 +24,8 @@ public class ConferenceRoomServiceImpl implements ConferenceRoomService {
     }
 
     @Override
-    @Transactional
     public List<ConferenceRoom> createConferenceRoom(ConferenceRoomRequest request) {
-        Iterable<ConferenceRoom> conferenceRooms = repository.saveAll(request.getConferenceRooms());
-        return Streamable.of(conferenceRooms).toList();
+        return repository.saveAll(request.getConferenceRooms());
     }
 
     @Override
@@ -38,7 +33,7 @@ public class ConferenceRoomServiceImpl implements ConferenceRoomService {
         ConferenceRoom conferenceRoom = repository.findById(request.getIdConferenceRoom())
                 .orElseThrow(() -> new ConferencePlatformException("Conference Room not found."));
 
-        if (request.getStatus().equals(RoomStatus.UNDER_CONSTRUCTION)) {
+        if (request.getStatus().equals(Status.UNDER_CONSTRUCTION)) {
             List<Conference> conferencesAfter = conferenceRepository.conferencesAfterStartAndEndDates(conferenceRoom);
             if (!conferencesAfter.isEmpty())
                 throw new ConferencePlatformException("Conference Room with booked conferences, not possible to update status.");

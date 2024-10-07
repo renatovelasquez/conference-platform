@@ -7,13 +7,13 @@ import java.util.HashMap;
 import java.util.List;
 
 public interface ConferenceService {
-    Conference createConference(ConferenceRequest conferenceRequest);
+    Conference createConference(ConferenceRequest request);
 
-    void cancelConference(CancelConferenceRequest cancelConferenceRequest);
+    void cancelConference(CancelConferenceRequest request);
 
-    AvailabilityConferencesResponse availabilityConferences();
+    Conference availabilityConference(Long idConference);
 
-    Conference updateConference(UpdateConferenceRequest updateConferenceRequest);
+    Conference updateConference(UpdateConferenceRequest request);
 
     AvailabilityConferencesResponse getAvailableConferences(AvailableConferencesRequest request);
 }

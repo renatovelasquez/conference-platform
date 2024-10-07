@@ -29,4 +29,8 @@ public class Conference {
     @JsonIgnore
     @OneToMany(mappedBy = "conference")
     private Set<RegistrationConference> registrations;
+    @Transient
+    private int freeSpots;
+    @Transient
+    private Status availability;
 }

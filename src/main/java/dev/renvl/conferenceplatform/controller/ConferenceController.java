@@ -39,11 +39,11 @@ public class ConferenceController {
             @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema())})})
     @PostMapping
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<?> createConference(@Valid @RequestBody ConferenceRequest conferenceRequest) {
+    public ResponseEntity<?> createConference(@Valid @RequestBody ConferenceRequest request) {
         Set<String> messages = new HashSet<>();
         HttpStatus httpStatus = HttpStatus.CREATED;
         try {
-            Conference conference = conferenceService.createConference(conferenceRequest);
+            Conference conference = conferenceService.createConference(request);
             return ResponseEntity.status(httpStatus).body(conference);
         } catch (ConferencePlatformException e) {
             httpStatus = HttpStatus.BAD_REQUEST;
@@ -94,14 +94,14 @@ public class ConferenceController {
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = HashMap.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema())})})
-    @GetMapping
+    @GetMapping("/available/{idConference}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> availabilityConferences() {
+    public ResponseEntity<?> checkAvailabilityConference(@PathVariable("idConference") Long idConference) {
         Set<String> messages = new HashSet<>();
         HttpStatus httpStatus = HttpStatus.OK;
         try {
-            AvailabilityConferencesResponse conferences = conferenceService.availabilityConferences();
-            return ResponseEntity.status(httpStatus).body(conferences);
+            Conference conference = conferenceService.availabilityConference(idConference);
+            return ResponseEntity.status(httpStatus).body(conference);
         } catch (Exception e) {
             httpStatus = HttpStatus.INTERNAL_SERVER_ERROR;
             messages.add(e.getMessage());

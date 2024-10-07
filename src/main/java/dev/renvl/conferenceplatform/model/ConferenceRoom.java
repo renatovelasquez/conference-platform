@@ -25,7 +25,7 @@ public class ConferenceRoom {
     private String name;
     @Enumerated(EnumType.STRING)
     @NotNull(message = "Status must not be blank")
-    private RoomStatus status;
+    private Status status;
     @NotBlank(message = "Location must not be blank")
     private String location;
     @Positive(message = "Max capacity must not be zero")

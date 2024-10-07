@@ -1,7 +1,8 @@
 package dev.renvl.conferenceplatform.model;
 
-public enum RoomStatus {
+public enum Status {
     UNDER_CONSTRUCTION,
-    OCCUPIED,
-    FREE
+    AVAILABLE,
+    FULL,
+    CLOSED
 }
