@@ -66,14 +66,14 @@ public class ConferenceController {
             @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = Conference.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "404", content = {@Content(schema = @Schema())}),
             @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema())})})
-    @DeleteMapping
+    @DeleteMapping("{idConference}")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> cancelConference(@Valid @RequestBody CancelConferenceRequest cancelConferenceRequest) {
+    public ResponseEntity<?> cancelConference(@PathVariable("idConference") Long idConference) {
         Set<String> messages = new HashSet<>();
-        HttpStatus httpStatus = HttpStatus.OK;
+        HttpStatus httpStatus;
         try {
-            conferenceService.cancelConference(cancelConferenceRequest);
-            return ResponseEntity.status(httpStatus).build();
+            conferenceService.cancelConference(idConference);
+            return ResponseEntity.ok("Conference cancelled");
         } catch (ConferencePlatformException e) {
             httpStatus = HttpStatus.BAD_REQUEST;
             messages.add(e.getMessage());

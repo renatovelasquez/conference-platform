@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
 
 @Repository
 public interface ConferenceRepository extends JpaRepository<Conference, Long> {
@@ -17,6 +18,10 @@ public interface ConferenceRepository extends JpaRepository<Conference, Long> {
             "(c.startConference < ?2 and c.endConference > ?2) or " +
             "(c.startConference >= ?1 and c.endConference <= ?2)")
     List<Conference> conferencesBetweenStartAndEndDates(LocalDateTime start, LocalDateTime end);
+
+    @Query("select c from Conference c where c.conferenceRoom.id = ?1 and " +
+            "c.startConference >= current_time or c.endConference >= current_time")
+    Optional<Conference> getConferenceAfterStartOrEndCurrentDate(Long idConference);
 
     @Query("select c from Conference c where c.conferenceRoom = ?1 and " +
             "current_time >= c.startConference or current_time >= c.endConference")

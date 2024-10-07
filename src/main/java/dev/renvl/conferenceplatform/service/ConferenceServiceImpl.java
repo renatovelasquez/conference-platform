@@ -4,12 +4,12 @@ import dev.renvl.conferenceplatform.dto.*;
 import dev.renvl.conferenceplatform.model.Conference;
 import dev.renvl.conferenceplatform.model.ConferenceRoom;
 import dev.renvl.conferenceplatform.model.Status;
+import dev.renvl.conferenceplatform.repository.ConferenceRegistrationRepository;
 import dev.renvl.conferenceplatform.repository.ConferenceRepository;
 import dev.renvl.conferenceplatform.repository.ConferenceRoomRepository;
-import dev.renvl.conferenceplatform.repository.ParticipantRepository;
 import exceptions.ConferencePlatformException;
-import jakarta.transaction.Transactional;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
@@ -19,12 +19,12 @@ public class ConferenceServiceImpl implements ConferenceService {
 
     private final ConferenceRepository repository;
     private final ConferenceRoomRepository conferenceRoomRepository;
-    private final ParticipantRepository participantRepository;
+    private final ConferenceRegistrationRepository conferenceRegistrationRepository;
 
-    public ConferenceServiceImpl(ConferenceRepository repository, ConferenceRoomRepository conferenceRoomRepository, ParticipantRepository participantRepository) {
+    public ConferenceServiceImpl(ConferenceRepository repository, ConferenceRoomRepository conferenceRoomRepository, ConferenceRegistrationRepository conferenceRegistrationRepository) {
         this.repository = repository;
         this.conferenceRoomRepository = conferenceRoomRepository;
-        this.participantRepository = participantRepository;
+        this.conferenceRegistrationRepository = conferenceRegistrationRepository;
     }
 
     @Override
@@ -46,16 +46,19 @@ public class ConferenceServiceImpl implements ConferenceService {
                 .startConference(LocalDateTime.from(request.getStartConference()))
                 .endConference(LocalDateTime.from(request.getEndConference()))
                 .conferenceRoom(conferenceRoom)
+                .availability(Status.AVAILABLE)
                 .build();
         return repository.save(conference);
     }
 
     @Override
-    public void cancelConference(CancelConferenceRequest request) {
-        Conference conference = repository.findById(request.getId())
+    @Transactional
+    public void cancelConference(Long idConference) {
+        Conference conference = repository.getConferenceAfterStartOrEndCurrentDate(idConference)
                 .orElseThrow(() -> new ConferencePlatformException("Conference not found."));
+
+        conferenceRegistrationRepository.deleteAll(conference.getRegistrations());
         repository.delete(conference);
-        //TODO delete all registrations
     }
 
     @Override

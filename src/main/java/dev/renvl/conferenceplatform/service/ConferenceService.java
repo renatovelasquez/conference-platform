@@ -9,7 +9,7 @@ import java.util.List;
 public interface ConferenceService {
     Conference createConference(ConferenceRequest request);
 
-    void cancelConference(CancelConferenceRequest request);
+    void cancelConference(Long idConference);
 
     Conference availabilityConference(Long idConference);
 
