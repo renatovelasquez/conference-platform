@@ -15,7 +15,6 @@ import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Set;
 
@@ -144,13 +143,13 @@ public class ConferenceController {
 
     @Operation(
             summary = "Available Conferences",
-            description = "Available Conferences object by specifying its values. The response is Conference object")
+            description = "Available Conferences object by specifying its values. The response is Available Conferences")
     @ApiResponses({
             @ApiResponse(responseCode = "200", content = {@Content(schema = @Schema(implementation = AvailabilityConferencesResponse.class), mediaType = "application/json")}),
             @ApiResponse(responseCode = "500", content = {@Content(schema = @Schema())})})
-    @GetMapping("/available")
+    @PostMapping("/available")
     @ResponseStatus(HttpStatus.OK)
-    public ResponseEntity<?> getAvailableConferences(AvailableConferencesRequest request) {
+    public ResponseEntity<?> getAvailableConferences(@Valid @RequestBody AvailableConferencesRequest request) {
         Set<String> messages = new HashSet<>();
         HttpStatus httpStatus = HttpStatus.OK;
         try {

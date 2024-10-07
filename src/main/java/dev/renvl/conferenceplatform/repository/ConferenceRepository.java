@@ -37,7 +37,7 @@ public interface ConferenceRepository extends JpaRepository<Conference, Long> {
             "(current_time >= c.startConference or current_time >= c.endConference)")
     List<Conference> conferencesAfterStartOrEndDatesByIdRoom(Long idConference);
 
-    @Query("select c, cr.maxCapacity - count(rc) as freeSpots," +
+    @Query("select c, (cr.maxCapacity - count(rc)) as freeSpots," +
             "case when count(rc) < cr.maxCapacity then 'AVAILABLE' else 'FULL' end as availability " +
             "from Conference c " +
             "inner join ConferenceRoom cr on cr = c.conferenceRoom " +

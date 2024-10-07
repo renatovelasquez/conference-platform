@@ -28,6 +28,7 @@ public class ConferenceServiceImpl implements ConferenceService {
     }
 
     @Override
+    @Transactional
     public Conference createConference(ConferenceRequest request) {
         ConferenceRoom conferenceRoom = conferenceRoomRepository
                 .findById(request.getIdConferenceRoom())

@@ -56,6 +56,7 @@ public class RegistrationServiceImpl implements RegistrationService {
     }
 
     @Override
+    @Transactional
     public void cancelRegistration(String registrationCode) {
         RegistrationConference registrationConference = conferenceRegistrationRepository.findByRegistrationCode(registrationCode)
                 .orElseThrow(() -> new ConferencePlatformException("Registration not found."));

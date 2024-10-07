@@ -11,6 +11,7 @@ import dev.renvl.conferenceplatform.repository.ConferenceRepository;
 import dev.renvl.conferenceplatform.repository.FeedbackRepository;
 import exceptions.ConferencePlatformException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -30,6 +31,7 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
+    @Transactional
     public FeedbackResponse findByConference(Long idConference) {
         Conference conference = conferenceRepository.findById(idConference)
                 .orElseThrow(() -> new ConferencePlatformException("Conference not found."));
@@ -49,6 +51,7 @@ public class FeedbackServiceImpl implements FeedbackService {
     }
 
     @Override
+    @Transactional
     public Feedback sendFeedback(FeedbackRequest request) {
         RegistrationConference registration = registrationRepository.findByRegistrationCode(request.getRegistrationCode())
                 .orElseThrow(() -> new ConferencePlatformException("Registration not found."));

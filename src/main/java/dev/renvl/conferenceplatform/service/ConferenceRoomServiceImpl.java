@@ -9,6 +9,7 @@ import dev.renvl.conferenceplatform.repository.ConferenceRepository;
 import dev.renvl.conferenceplatform.repository.ConferenceRoomRepository;
 import exceptions.ConferencePlatformException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 
@@ -29,6 +30,7 @@ public class ConferenceRoomServiceImpl implements ConferenceRoomService {
     }
 
     @Override
+    @Transactional
     public ConferenceRoom updateConferenceRoom(UpdateConferenceRoomRequest request) {
         ConferenceRoom conferenceRoom = repository.findById(request.getIdConferenceRoom())
                 .orElseThrow(() -> new ConferencePlatformException("Conference Room not found."));
