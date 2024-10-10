@@ -1,6 +1,6 @@
 # conference-platform
 
-This application provides a small conference management system, that will contain at least 2 modules: 
+This application provides a small conference management system, that will contain at least 2 modules:
 Back Office Gateway and Conference Gateway.
 -----
 
@@ -93,6 +93,26 @@ Available Customers ID
       "status": "UNDER_CONSTRUCTION",
       "maxCapacity": 0
     }'
+    ```
+
+#### /api/conference-room
+
+* `POST` : Create Conference Room
+
+    ```bash
+    curl --request POST \
+      --url http://localhost:8080/api/conference-room \
+      --header 'Content-Type: application/json' \
+      --data '{
+        "conferenceRooms": [
+          {
+            "name": "string",
+            "status": "UNDER_CONSTRUCTION",
+            "location": "string",
+            "maxCapacity": 0
+          }
+        ]
+      }'
     ```
 
 ## Swagger-ui
